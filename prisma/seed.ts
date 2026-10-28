@@ -1,13 +1,14 @@
 import { randomInt } from "node:crypto";
+import { hashPassword } from "better-auth/crypto";
 import {
   PrismaClient,
   TaskPriority,
   TaskStatus,
   WorkspaceRole,
-} from "@prisma/client";
-import { hashPassword } from "better-auth/crypto";
+} from "../generated/prisma/client";
+import { createPrismaAdapter } from "../lib/prisma-adapter";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ adapter: createPrismaAdapter() });
 
 const users = [
   {
