@@ -62,7 +62,12 @@ async function WorkspaceList() {
           <ul className={styles.workspaceItems}>
             {memberships.map(({ role, workspace }) => (
               <li className={styles.workspaceItem} key={workspace.id}>
-                <span>{workspace.name}</span>
+                <Link
+                  className={styles.workspaceLink}
+                  href={`/workspaces/${workspace.id}`}
+                >
+                  {workspace.name}
+                </Link>
                 <span className={styles.workspaceRole}>
                   {role.toLowerCase()}
                 </span>

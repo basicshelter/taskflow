@@ -27,3 +27,25 @@ export function getWorkspaceMemberships(userId: string) {
     orderBy: { createdAt: "asc" },
   });
 }
+
+export function getWorkspaceDetails(workspaceId: string, userId: string) {
+  return prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    select: {
+      id: true,
+      name: true,
+      memberships: {
+        where: { userId },
+        select: { role: true },
+      },
+      projects: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+}

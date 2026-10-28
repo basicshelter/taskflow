@@ -1,16 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/v1/workspaces/route";
 import {
+  getWorkspaceDetails,
   getWorkspaceMemberships,
   redirectWorkspaceMembers,
 } from "@/lib/workspaces";
 
-const { getSession, findFirst, findMany, createWorkspace } = vi.hoisted(() => ({
-  getSession: vi.fn(),
-  findFirst: vi.fn(),
-  findMany: vi.fn(),
-  createWorkspace: vi.fn(),
-}));
+const { getSession, findFirst, findMany, findUnique, createWorkspace } =
+  vi.hoisted(() => ({
+    getSession: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    createWorkspace: vi.fn(),
+  }));
 
 vi.mock("next/navigation", () => ({
   redirect: (path: string) => {
@@ -24,7 +27,11 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    workspace: { create: createWorkspace },
+    workspace: {
+      findFirst,
+      findUnique,
+      create: createWorkspace,
+    },
     workspaceMembership: { findFirst, findMany },
   },
 }));
@@ -89,6 +96,34 @@ describe("workspace routing", () => {
       "Design",
       "Research",
     ]);
+  });
+
+  it("loads workspace details only when the user is a member", async () => {
+    findUnique.mockResolvedValue({
+      id: "workspace-1",
+      name: "Design",
+      memberships: [{ role: "OWNER" }],
+      projects: [{ id: "project-1", name: "Website", description: null }],
+    });
+
+    const workspace = await getWorkspaceDetails("workspace-1", "user-1");
+
+    expect(findUnique).toHaveBeenCalledWith({
+      where: { id: "workspace-1" },
+      select: {
+        id: true,
+        name: true,
+        memberships: {
+          where: { userId: "user-1" },
+          select: { role: true },
+        },
+        projects: {
+          select: { id: true, name: true, description: true },
+          orderBy: { updatedAt: "desc" },
+        },
+      },
+    });
+    expect(workspace?.projects).toHaveLength(1);
   });
 });
 
