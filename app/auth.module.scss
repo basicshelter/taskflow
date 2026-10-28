@@ -8,7 +8,11 @@
   overflow: hidden;
   padding: 38px 6vw 54px;
   background:
-    radial-gradient(ellipse at 12% 88%, rgba(119, 145, 75, 0.11), transparent 34%),
+    radial-gradient(
+      ellipse at 12% 88%,
+      rgba(119, 145, 75, 0.11),
+      transparent 34%
+    ),
     #10110f;
 }
 
@@ -83,7 +87,11 @@
   overflow: hidden;
   padding: 56px 54px 42px;
   background:
-    radial-gradient(circle at 85% 72%, rgba(181, 220, 111, 0.14), transparent 29%),
+    radial-gradient(
+      circle at 85% 72%,
+      rgba(181, 220, 111, 0.14),
+      transparent 29%
+    ),
     linear-gradient(148deg, #1d211a 0%, #171a15 58%, #20251b 100%);
 }
 
@@ -113,10 +121,6 @@
     font-weight: 550;
     letter-spacing: -3.7px;
     line-height: 1.05;
-
-    span {
-      color: #c5f36c;
-    }
   }
 
   p {
@@ -209,7 +213,12 @@
   height: 38px;
   border: 1px solid rgba(197, 243, 108, 0.54);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #c5f36c 0, #7d994d 30%, #363d2c 71%);
+  background: radial-gradient(
+    circle at 35% 35%,
+    #c5f36c 0,
+    #7d994d 30%,
+    #363d2c 71%
+  );
   box-shadow: 0 0 30px rgba(197, 243, 108, 0.2);
 }
 
@@ -271,9 +280,7 @@
     background: #121410;
     color: #f2f3ed;
     font-size: 13px;
-    transition:
-      border-color 150ms ease,
-      box-shadow 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
 
     &::placeholder {
       color: #666b60;
@@ -314,9 +321,7 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
-  transition:
-    background 150ms ease,
-    transform 150ms ease;
+  transition: background 150ms ease, transform 150ms ease;
 
   &:hover:not(:disabled) {
     background: #d3fa86;
@@ -358,6 +363,10 @@
     color: #a5bb7b;
     font-size: 15px;
   }
+}
+
+.storyContent h1 span {
+  color: #c5f36c;
 }
 
 @media (max-width: 760px) {
