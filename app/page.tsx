@@ -1,69 +1,124 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { headers } from "next/headers";
+import Link from "next/link";
+import { Suspense } from "react";
+import { SignOutButton } from "@/components/sign-out-button";
+import { auth } from "@/lib/auth";
+import styles from "./home.module.scss";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className={styles.page}>
+      <header className={styles.header}>
+        <Link className={styles.brand} href="/" aria-label="Taskflow home">
+          <span className={styles.brandMark} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          taskflow
+        </Link>
+        <Suspense fallback={<AccountLinks />}>
+          <AccountNavigation />
+        </Suspense>
+      </header>
+
+      <section className={styles.hero}>
+        <div className={styles.eyebrow}>
+          <span className={styles.statusDot} />A calmer way to get things done
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1>
+          Big plans.
+          <br />
+          <span>Small steps.</span>
+          <br />
+          Real progress.
+        </h1>
+        <p>
+          Bring your projects, priorities, and people together. Make room for
+          the work that matters.
+        </p>
+        <Link className={styles.heroCta} href="/sign-up">
+          Start your workspace <span aria-hidden="true">↗</span>
+        </Link>
+      </section>
+
+      <section className={styles.preview} aria-label="Taskflow preview">
+        <div className={styles.previewTop}>
+          <div>
+            <span className={styles.previewLabel}>YOUR SPACE</span>
+            <h2>This week</h2>
+          </div>
+          <span className={styles.weekTag}>Week 24</span>
         </div>
-      </main>
+        <div className={styles.progress}>
+          <div className={styles.progressHeading}>
+            <span>Weekly focus</span>
+            <span>68%</span>
+          </div>
+          <div
+            className={styles.progressTrack}
+            role="progressbar"
+            aria-label="Weekly focus"
+            aria-valuenow={68}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <span />
+          </div>
+        </div>
+        <div className={styles.taskList}>
+          <div className={styles.task}>
+            <span className={styles.taskCheck}>✓</span>
+            <span className={styles.taskDone}>Map out the launch plan</span>
+            <span className={styles.taskTag}>Planning</span>
+          </div>
+          <div className={styles.task}>
+            <span className={styles.taskCheck} />
+            <span>Share the first prototype</span>
+            <span className={styles.taskTag}>Design</span>
+          </div>
+          <div className={styles.task}>
+            <span className={styles.taskCheck} />
+            <span>Gather feedback from the team</span>
+            <span className={styles.taskTag}>Research</span>
+          </div>
+        </div>
+      </section>
+
+      <footer className={styles.footer}>
+        <span>Less juggling. More doing.</span>
+        <span>Made for your next big thing.</span>
+      </footer>
+    </main>
+  );
+}
+
+async function AccountNavigation() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return <AccountLinks />;
+  }
+
+  return (
+    <div className={styles.account}>
+      <span className={styles.accountName}>
+        {session.user.name || session.user.email}
+      </span>
+      <SignOutButton />
     </div>
+  );
+}
+
+function AccountLinks() {
+  return (
+    <nav className={styles.navigation} aria-label="Account">
+      <Link href="/sign-in">Sign in</Link>
+      <Link className={styles.navCta} href="/sign-up">
+        Get started <span aria-hidden="true">↗</span>
+      </Link>
+    </nav>
   );
 }
