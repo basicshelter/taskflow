@@ -34,7 +34,7 @@ Taskflow is a Next.js app with email/password authentication powered by Better A
 
 Visit [http://localhost:3000](http://localhost:3000), then use **Get started** to create an account. Sign-in and sign-up use Better Auth's email/password endpoints; sessions and user records are stored in PostgreSQL.
 
-The `/sign-in` and `/sign-up` pages are grouped under `app/(auth)` and are only available while signed out. Authenticated users are redirected to the home page.
+The `/sign-in` and `/sign-up` pages are grouped under `app/(auth)` and are only available while signed out. After authentication, users with workspace memberships are redirected to `/workspaces`; users without memberships remain on the home page to create their first workspace.
 
 ## Testing
 
