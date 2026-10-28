@@ -21,7 +21,10 @@ Taskflow is a Next.js app with email/password authentication powered by Better A
    ```bash
    pnpm db:generate
    pnpm db:push
+   pnpm db:seed
    ```
+
+   The seed creates the demo users, workspaces, projects, and random tasks. Re-running it replaces the memberships and projects in those four seeded workspaces with the seed data.
 
 4. Start the app:
 
