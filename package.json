@@ -1,6 +1,7 @@
 {
   "name": "taskflow",
   "version": "0.1.0",
+  "description": "A workspace-based project management application where users create projects, invite collaborators, organize tasks, track progress, and manage work through a list and a Kanban board.",
   "private": true,
   "scripts": {
     "dev": "next dev",
