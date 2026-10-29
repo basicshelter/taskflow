@@ -38,6 +38,8 @@ The `/sign-in` and `/sign-up` pages are grouped under `app/(auth)` and are only 
 
 Projects in a workspace open a member-only details page with tasks grouped into To do, In progress, In review, and Done columns.
 
+Workspace members can review the member list and roles. Owners and admins can add users who already have a Taskflow account by email and remove members; admins can set non-owner roles to admin or member. Workspace owners can transfer ownership to another workspace member. Email invitations to users without an account are not currently supported.
+
 ## Testing
 
 Install the Playwright browser once, then run each test category or the full suite:

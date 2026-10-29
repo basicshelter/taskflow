@@ -1,6 +1,45 @@
 import { NextResponse } from "next/server";
 import type { z } from "zod";
+import { ApplicationErrorKind } from "@/lib/application-errors";
 import { auth } from "@/lib/auth";
+
+export { ApplicationErrorKind };
+
+export enum HttpErrorMessage {
+  AuthenticationRequired = "Authentication required.",
+  InvalidJsonBody = "Invalid JSON body.",
+  InternalServerError = "Internal server error.",
+  WorkspaceNotFound = "This workspace could not be found.",
+  InvalidWorkspaceMemberId = "This workspace member could not be found.",
+  WorkspacePermissionDenied = "Only workspace owners and admins can manage members.",
+  WorkspaceOwnerRequired = "Only the workspace owner can transfer ownership.",
+  WorkspaceMemberMissing = "That user is not a workspace member.",
+  ProjectNotFound = "Project not found.",
+  MembershipRequired = "Workspace membership required.",
+  ProjectCreationPermissionDenied = "Only workspace owners and admins can create projects.",
+}
+
+const APPLICATION_ERROR_HTTP_MAPPINGS: Record<
+  ApplicationErrorKind,
+  { message: HttpErrorMessage; status: number }
+> = {
+  [ApplicationErrorKind.WorkspaceNotFound]: {
+    message: HttpErrorMessage.WorkspaceNotFound,
+    status: 404,
+  },
+  [ApplicationErrorKind.PermissionDenied]: {
+    message: HttpErrorMessage.ProjectCreationPermissionDenied,
+    status: 403,
+  },
+  [ApplicationErrorKind.ProjectNotFound]: {
+    message: HttpErrorMessage.ProjectNotFound,
+    status: 404,
+  },
+  [ApplicationErrorKind.MembershipRequired]: {
+    message: HttpErrorMessage.MembershipRequired,
+    status: 403,
+  },
+};
 
 export class HttpError extends Error {
   constructor(
@@ -10,6 +49,12 @@ export class HttpError extends Error {
     super(message);
     this.name = "HttpError";
   }
+}
+
+export function mapApplicationError(kind: ApplicationErrorKind): HttpError {
+  const mapping = APPLICATION_ERROR_HTTP_MAPPINGS[kind];
+
+  return new HttpError(mapping.message, mapping.status);
 }
 
 export function withApiErrorHandling<Args extends unknown[]>(
@@ -28,7 +73,7 @@ export function withApiErrorHandling<Args extends unknown[]>(
 
       console.error("Unhandled API error:", error);
       return NextResponse.json(
-        { error: "Internal server error." },
+        { error: HttpErrorMessage.InternalServerError },
         { status: 500 },
       );
     }
@@ -39,7 +84,7 @@ export async function requireUserId(request: Request): Promise<string> {
   const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session) {
-    throw new HttpError("Authentication required.", 401);
+    throw new HttpError(HttpErrorMessage.AuthenticationRequired, 401);
   }
 
   return session.user.id;
@@ -49,7 +94,7 @@ export async function readJsonBody(request: Request): Promise<unknown> {
   try {
     return await request.json();
   } catch {
-    throw new HttpError("Invalid JSON body.", 400);
+    throw new HttpError(HttpErrorMessage.InvalidJsonBody, 400);
   }
 }
 

@@ -1,14 +1,15 @@
 import type { TaskStatus } from "@/generated/prisma/client";
+import { ApplicationErrorKind } from "@/lib/application-errors";
 import { prisma } from "@/lib/prisma";
 
-export enum ProjectErrorKind {
-  WorkspaceNotFound = "workspace_not_found",
-  PermissionDenied = "permission_denied",
-  Created = "created",
-  ProjectNotFound = "project_not_found",
-  MembershipRequired = "membership_required",
-  Found = "found",
-}
+export const ProjectErrorKind = {
+  WorkspaceNotFound: ApplicationErrorKind.WorkspaceNotFound,
+  PermissionDenied: ApplicationErrorKind.PermissionDenied,
+  Created: "created",
+  ProjectNotFound: ApplicationErrorKind.ProjectNotFound,
+  MembershipRequired: ApplicationErrorKind.MembershipRequired,
+  Found: "found",
+} as const;
 
 export const ProjectResultKind = ProjectErrorKind;
 
@@ -19,9 +20,9 @@ type CreateProjectInput = {
 };
 
 type CreateProjectResult =
-  | { kind: ProjectErrorKind.WorkspaceNotFound }
-  | { kind: ProjectErrorKind.PermissionDenied }
-  | { kind: ProjectErrorKind.Created; id: string };
+  | { kind: typeof ProjectErrorKind.WorkspaceNotFound }
+  | { kind: typeof ProjectErrorKind.PermissionDenied }
+  | { kind: typeof ProjectErrorKind.Created; id: string };
 
 export async function createProject({
   workspaceId,
@@ -67,10 +68,10 @@ type GetProjectDetailsInput = {
 };
 
 type GetProjectDetailsResult =
-  | { kind: ProjectErrorKind.ProjectNotFound }
-  | { kind: ProjectErrorKind.MembershipRequired }
+  | { kind: typeof ProjectErrorKind.ProjectNotFound }
+  | { kind: typeof ProjectErrorKind.MembershipRequired }
   | {
-      kind: ProjectErrorKind.Found;
+      kind: typeof ProjectErrorKind.Found;
       project: {
         id: string;
         name: string;

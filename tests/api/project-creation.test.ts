@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/v1/workspaces/[workspaceId]/projects/route";
+import { HttpErrorMessage } from "@/lib/api";
 
 const { getSession, findUnique, createProject } = vi.hoisted(() => ({
   getSession: vi.fn(),
@@ -84,6 +85,9 @@ describe("project creation endpoint", () => {
     const response = await createProjectRequest();
 
     expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({
+      error: HttpErrorMessage.ProjectCreationPermissionDenied,
+    });
     expect(createProject).not.toHaveBeenCalled();
   });
 
@@ -102,6 +106,9 @@ describe("project creation endpoint", () => {
     const response = await createProjectRequest();
 
     expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({
+      error: HttpErrorMessage.WorkspaceNotFound,
+    });
     expect(createProject).not.toHaveBeenCalled();
   });
 

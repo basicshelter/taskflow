@@ -1,14 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getWorkspaceDetails,
+  getWorkspaceMembersForWorkspaces,
   getWorkspaceMemberships,
   redirectWorkspaceMembers,
 } from "@/lib/workspaces";
 
-const { findFirst, findMany, findUnique } = vi.hoisted(() => ({
+const { findFirst, findMany, findUnique, findUsers } = vi.hoisted(() => ({
   findFirst: vi.fn(),
   findMany: vi.fn(),
   findUnique: vi.fn(),
+  findUsers: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -24,6 +26,7 @@ vi.mock("@/lib/prisma", () => ({
       findUnique,
     },
     workspaceMembership: { findFirst, findMany },
+    user: { findMany: findUsers },
   },
 }));
 
@@ -102,5 +105,126 @@ describe("workspace routing", () => {
       },
     });
     expect(workspace?.projects).toHaveLength(1);
+  });
+
+  it("loads a workspace member list with names, emails, and roles", async () => {
+    findMany.mockResolvedValue([
+      {
+        workspaceId: "workspace-1",
+        userId: "user-1",
+        role: "OWNER",
+        createdAt: new Date("2026-01-01"),
+      },
+      {
+        workspaceId: "workspace-1",
+        userId: "user-2",
+        role: "ADMIN",
+        createdAt: new Date("2026-01-02"),
+      },
+    ]);
+    findUsers.mockResolvedValue([
+      { id: "user-1", name: "Alex", email: "alex@example.com" },
+      { id: "user-2", name: "Sam", email: "sam@example.com" },
+    ]);
+
+    await expect(
+      getWorkspaceMembersForWorkspaces(["workspace-1"]),
+    ).resolves.toEqual({
+      "workspace-1": [
+        {
+          userId: "user-1",
+          name: "Alex",
+          email: "alex@example.com",
+          role: "OWNER",
+        },
+        {
+          userId: "user-2",
+          name: "Sam",
+          email: "sam@example.com",
+          role: "ADMIN",
+        },
+      ],
+    });
+    expect(findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { workspaceId: { in: ["workspace-1"] } },
+      }),
+    );
+    expect(findUsers).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { in: ["user-1", "user-2"] } },
+      }),
+    );
+  });
+
+  it("surfaces an inconsistent membership with no user record", async () => {
+    findMany.mockResolvedValue([
+      {
+        workspaceId: "workspace-1",
+        userId: "deleted-user",
+        role: "MEMBER",
+        createdAt: new Date(),
+      },
+    ]);
+    findUsers.mockResolvedValue([]);
+
+    await expect(
+      getWorkspaceMembersForWorkspaces(["workspace-1"]),
+    ).rejects.toThrow(
+      "Workspace member deleted-user has no corresponding user.",
+    );
+  });
+
+  it("loads member lists for multiple workspaces in one batch", async () => {
+    findMany.mockResolvedValue([
+      {
+        workspaceId: "workspace-1",
+        userId: "user-1",
+        role: "OWNER",
+        createdAt: new Date("2026-01-01"),
+      },
+      {
+        workspaceId: "workspace-2",
+        userId: "user-2",
+        role: "ADMIN",
+        createdAt: new Date("2026-01-02"),
+      },
+    ]);
+    findUsers.mockResolvedValue([
+      { id: "user-1", name: "Alex", email: "alex@example.com" },
+      { id: "user-2", name: "Sam", email: "sam@example.com" },
+    ]);
+
+    await expect(
+      getWorkspaceMembersForWorkspaces(["workspace-1", "workspace-2"]),
+    ).resolves.toEqual({
+      "workspace-1": [
+        {
+          userId: "user-1",
+          name: "Alex",
+          email: "alex@example.com",
+          role: "OWNER",
+        },
+      ],
+      "workspace-2": [
+        {
+          userId: "user-2",
+          name: "Sam",
+          email: "sam@example.com",
+          role: "ADMIN",
+        },
+      ],
+    });
+    expect(findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { workspaceId: { in: ["workspace-1", "workspace-2"] } },
+      }),
+    );
+  });
+
+  it("does not query the database when there are no workspaces", async () => {
+    await expect(getWorkspaceMembersForWorkspaces([])).resolves.toEqual({});
+    expect(findMany).not.toHaveBeenCalled();
+    expect(findUsers).not.toHaveBeenCalled();
   });
 });

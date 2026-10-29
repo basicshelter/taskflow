@@ -17,6 +17,7 @@ vi.mock("next/navigation", () => ({
   notFound: () => {
     throw new Error("notFound");
   },
+  useRouter: () => ({ refresh: vi.fn() }),
 }));
 
 vi.mock("@/lib/auth-session", () => ({

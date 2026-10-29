@@ -1,12 +1,16 @@
 import { z } from "zod";
 import {
-  HttpError,
+  HttpErrorMessage,
+  mapApplicationError,
   readJsonBody,
   requireUserId,
   validateInput,
   withApiErrorHandling,
 } from "@/lib/api";
-import { createProject } from "@/lib/controllers/project.controller";
+import {
+  createProject,
+  ProjectErrorKind,
+} from "@/lib/controllers/project.controller";
 
 const createProjectSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -22,7 +26,7 @@ export const POST = withApiErrorHandling(
     const parsedWorkspaceId = validateInput(
       z.uuid(),
       workspaceId,
-      "Workspace not found.",
+      HttpErrorMessage.WorkspaceNotFound,
       404,
     );
     const input = validateInput(
@@ -37,15 +41,8 @@ export const POST = withApiErrorHandling(
       userId,
     });
 
-    if (result.kind === "workspace_not_found") {
-      throw new HttpError("Workspace not found.", 404);
-    }
-
-    if (result.kind === "permission_denied") {
-      throw new HttpError(
-        "Only workspace owners and admins can create projects.",
-        403,
-      );
+    if (result.kind !== ProjectErrorKind.Created) {
+      throw mapApplicationError(result.kind);
     }
 
     return Response.json({ id: result.id }, { status: 201 });

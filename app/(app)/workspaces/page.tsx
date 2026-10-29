@@ -3,8 +3,12 @@ import { Suspense } from "react";
 import styles from "@/app/home.module.scss";
 import { AdaptiveListPage } from "@/components/adaptive-list-page";
 import { WorkspaceCreateForm } from "@/components/workspace-create-form";
+import { WorkspaceMembers } from "@/components/workspace-members";
 import { verifySession } from "@/lib/auth-session";
-import { getWorkspaceMemberships } from "@/lib/workspaces";
+import {
+  getWorkspaceMembersForWorkspaces,
+  getWorkspaceMemberships,
+} from "@/lib/workspaces";
 
 export default function WorkspacesPage() {
   return (
@@ -23,6 +27,9 @@ export default function WorkspacesPage() {
 async function WorkspaceList() {
   const { user } = await verifySession();
   const memberships = await getWorkspaceMemberships(user.id);
+  const memberLists = await getWorkspaceMembersForWorkspaces(
+    memberships.map(({ workspace }) => workspace.id),
+  );
 
   return (
     <AdaptiveListPage
@@ -42,11 +49,19 @@ async function WorkspaceList() {
                   className={`${styles.navigationCard} ${styles.workspaceLink}`}
                   href={`/workspaces/${workspace.id}`}
                 >
-                  <span>{workspace.name}</span>
-                  <span className={styles.workspaceRole}>
-                    {role.toLowerCase()}
+                  <span className={styles.workspaceLinkDetails}>
+                    <span>{workspace.name}</span>
+                    <span className={styles.workspaceRole}>
+                      {role.toLowerCase()}
+                    </span>
                   </span>
                 </Link>
+                <WorkspaceMembers
+                  currentUserRole={role}
+                  members={memberLists[workspace.id] ?? []}
+                  workspaceId={workspace.id}
+                  workspaceName={workspace.name}
+                />
               </li>
             ))}
           </ul>
