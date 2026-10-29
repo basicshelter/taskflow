@@ -36,6 +36,8 @@ Visit [http://localhost:3000](http://localhost:3000), then use **Get started** t
 
 The `/sign-in` and `/sign-up` pages are grouped under `app/(auth)` and are only available while signed out. After authentication, users with workspace memberships are redirected to `/workspaces`; users without memberships remain on the home page to create their first workspace.
 
+Projects in a workspace open a member-only details page with tasks grouped into To do, In progress, In review, and Done columns.
+
 ## Testing
 
 Run the auth validation and form tests with:

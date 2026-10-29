@@ -46,6 +46,52 @@
   padding: 30px 0;
 }
 
+.listPageHeaderCollapsed {
+  padding: 6px 0;
+}
+
+.compactListTitle {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+  padding: 0 24px;
+  overflow: hidden;
+  color: #dce0d4;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  a {
+    color: #aeb39f;
+
+    &:hover {
+      color: #c5f36c;
+    }
+  }
+
+  > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.headerBrandGroup {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.headerContext {
+  margin-left: 18px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(235, 239, 226, 0.12);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -294,33 +340,61 @@
   }
 }
 
+.workspaceList .workspacePageTitle {
+  margin-top: 0;
+}
+
+.listPageCompact .workspaceList {
+  margin-top: 20px;
+}
+
+.listPageCompact .listPageIntro {
+  display: none;
+}
+
 .workspaceItems {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 14px;
   margin-top: 30px;
+  list-style: none;
 }
 
 .workspaceItem {
+  min-width: 0;
+}
+
+.workspaceLink {
   display: flex;
   min-height: 88px;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 20px;
-  border: 1px solid rgba(236, 240, 230, 0.11);
-  border-radius: 10px;
-  background: rgba(30, 33, 28, 0.72);
   color: #eaede4;
   font-size: 14px;
 }
 
-.workspaceLink {
-  flex: 1;
-  transition: color 150ms ease;
+.navigationCard {
+  height: 100%;
+  padding: 20px;
+  border: 1px solid rgba(236, 240, 230, 0.11);
+  border-radius: 10px;
+  background: rgba(30, 33, 28, 0.72);
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
 
-  &:hover {
-    color: #c5f36c;
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(197, 243, 108, 0.34);
+    background: rgba(34, 38, 31, 0.9);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(197, 243, 108, 0.65);
+    outline-offset: 3px;
   }
 }
 
@@ -346,7 +420,7 @@
 
 .workspaceBackLink {
   display: inline-flex;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
   color: #b6b9af;
   font-size: 12px;
   transition: color 150ms ease;
@@ -377,16 +451,26 @@
   }
 }
 
+.listPageCompact .workspaceItems,
+.listPageCompact .projectItems {
+  margin-top: 14px;
+}
+
+.listPageCompact .projectCreateForm {
+  margin-top: 14px;
+}
+
 .projectEmpty .projectCreateForm {
   justify-content: center;
 }
 
 .projectItem {
+  min-width: 0;
+}
+
+.projectLink {
+  display: block;
   min-height: 120px;
-  padding: 21px;
-  border: 1px solid rgba(236, 240, 230, 0.11);
-  border-radius: 10px;
-  background: rgba(30, 33, 28, 0.72);
 
   h2 {
     color: #eaede4;
@@ -401,6 +485,265 @@
     font-size: 12px;
     line-height: 1.7;
   }
+}
+
+.projectDetails {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  max-width: 1440px;
+  flex: 1;
+  flex-direction: column;
+  margin: 0 auto;
+  padding-bottom: 12px;
+}
+
+.projectIntro {
+  flex: 0 0 auto;
+}
+
+.projectTitleLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.projectHeading {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 14px;
+
+  h1 {
+    min-width: 0;
+    overflow: hidden;
+    color: #f2f3ed;
+    font-size: clamp(42px, 6vw, 64px);
+    font-weight: 520;
+    letter-spacing: -3px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.collapseHeaderButton {
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 1px solid rgba(235, 239, 226, 0.13);
+  border-radius: 6px;
+  background: rgba(30, 33, 28, 0.72);
+  color: #b6b9af;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  transition: border-color 150ms ease, color 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(197, 243, 108, 0.4);
+    color: #d1f58e;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(197, 243, 108, 0.65);
+    outline-offset: 3px;
+  }
+}
+
+.projectDescription {
+  max-width: 720px;
+  margin-top: 8px;
+  color: #9a9d94;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.projectPage {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 max(6vw, 24px);
+  background:
+    radial-gradient(
+      ellipse at 75% 42%,
+      rgba(141, 171, 83, 0.1),
+      transparent 34%
+    ),
+    #10110f;
+
+  @supports (height: 100dvh) {
+    height: 100dvh;
+  }
+
+  &::before {
+    position: absolute;
+    top: 0;
+    right: 7%;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+      transparent,
+      rgba(233, 239, 224, 0.045),
+      transparent
+    );
+    content: "";
+    pointer-events: none;
+  }
+}
+
+.projectPageHeader {
+  flex: 0 0 auto;
+  padding: 14px 0;
+}
+
+.projectPageHeaderCollapsed {
+  min-height: 48px;
+  padding: 6px 0;
+}
+
+.compactProjectTitle {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+  padding: 0 24px;
+  overflow: hidden;
+  color: #dce0d4;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compactWorkspaceLink {
+  color: #aeb39f;
+
+  &:hover {
+    color: #c5f36c;
+  }
+}
+
+.board {
+  display: grid;
+  min-height: 0;
+  flex: 1 1 0;
+  grid-template-columns: repeat(4, minmax(230px, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(197, 243, 108, 0.35) transparent;
+}
+
+.boardColumn {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 14px;
+  border: 1px solid rgba(236, 240, 230, 0.1);
+  border-radius: 10px;
+  background: rgba(30, 33, 28, 0.52);
+}
+
+.boardColumnHeader {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 2px 13px;
+  border-bottom: 1px solid rgba(236, 240, 230, 0.1);
+
+  h2 {
+    color: #dce0d4;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  span {
+    color: #aeb39f;
+    font-size: 11px;
+  }
+}
+
+.boardColumn .taskList {
+  display: grid;
+  align-content: start;
+  min-height: 0;
+  flex: 1 1 auto;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  list-style: none;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(197, 243, 108, 0.38) transparent;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: rgba(197, 243, 108, 0.38);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.projectPageHeaderCollapsed + .projectDetails .board {
+  margin-top: 0;
+}
+
+.taskCard {
+  height: 82px;
+  flex: 0 0 82px;
+  overflow: hidden;
+  padding: 10px 12px;
+  border: 1px solid rgba(236, 240, 230, 0.09);
+  border-radius: 7px;
+  background: rgba(16, 17, 15, 0.72);
+
+  h3 {
+    overflow: hidden;
+    color: #eaede4;
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    display: -webkit-box;
+    margin-top: 4px;
+    overflow: hidden;
+    color: #9a9d94;
+    font-size: 11px;
+    line-height: 15px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+
+.emptyColumn {
+  margin-top: 16px;
+  color: #777c71;
+  font-size: 11px;
 }
 
 .projectEmpty {
@@ -585,7 +928,7 @@
   color: #c5f36c;
 }
 
-.taskList {
+.preview .taskList {
   display: flex;
   flex-direction: column;
   gap: 17px;
@@ -665,6 +1008,19 @@
     }
   }
 
+  .projectPage {
+    padding: 0 22px;
+  }
+
+  .projectHeading {
+    gap: 10px;
+
+    h1 {
+      font-size: clamp(32px, 7vw, 48px);
+      letter-spacing: -2px;
+    }
+  }
+
   .preview {
     right: 5vw;
     width: 34vw;
@@ -689,6 +1045,81 @@
 
   .accountName {
     display: none;
+  }
+
+  .headerContext {
+    margin-left: 9px;
+    padding-left: 9px;
+    font-size: 9px;
+  }
+
+  .listPageHeaderCollapsed {
+    padding: 5px 0;
+  }
+
+  .compactListTitle {
+    gap: 6px;
+    padding: 0 8px;
+    font-size: 9px;
+  }
+
+  .compactListTitle a,
+  .compactListTitle > span[aria-hidden="true"] {
+    display: none;
+  }
+
+  .projectPageHeader {
+    padding: 10px 0;
+  }
+
+  .projectPageHeaderCollapsed {
+    min-height: 44px;
+    padding: 5px 0;
+  }
+
+  .compactProjectTitle {
+    gap: 6px;
+    padding: 0 8px;
+    font-size: 9px;
+  }
+
+  .compactWorkspaceLink,
+  .compactProjectTitle > span[aria-hidden="true"] {
+    display: none;
+  }
+
+  .compactProjectTitle > span:not([aria-hidden="true"]) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .compactProjectTitle .collapseHeaderButton {
+    padding: 6px 7px;
+    font-size: 9px;
+  }
+
+  .projectTitleLine {
+    gap: 8px;
+  }
+
+  .projectTitleLine .collapseHeaderButton {
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+
+  .board {
+    grid-template-columns: repeat(4, minmax(230px, 1fr));
+    gap: 10px;
+  }
+
+  .boardColumn {
+    padding: 11px;
+  }
+
+  .projectHeading {
+    flex-wrap: wrap;
+    gap: 4px 10px;
   }
 
   .hero {

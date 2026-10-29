@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import styles from "@/app/home.module.scss";
-import { SignOutButton } from "@/components/sign-out-button";
+import { AdaptiveListPage } from "@/components/adaptive-list-page";
 import { WorkspaceCreateForm } from "@/components/workspace-create-form";
 import { verifySession } from "@/lib/auth-session";
 import { getWorkspaceMemberships } from "@/lib/workspaces";
@@ -25,41 +25,28 @@ async function WorkspaceList() {
   const memberships = await getWorkspaceMemberships(user.id);
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
-        <Link className={styles.brand} href="/" aria-label="Taskflow home">
-          <span className={styles.brandMark} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          taskflow
-        </Link>
-        <div className={styles.account}>
-          <span className={styles.accountName}>{user.name || user.email}</span>
-          <SignOutButton />
-        </div>
-      </header>
-
+    <AdaptiveListPage
+      context="YOUR SPACES"
+      pageTitle="Workspaces"
+      userName={user.name || user.email}
+    >
       <section className={styles.workspaceList}>
-        <div className={styles.eyebrow}>
-          <span className={styles.statusDot} />
-          YOUR SPACES
-        </div>
-        <h1>Workspaces</h1>
+        <h1 className={`${styles.workspacePageTitle} ${styles.listPageIntro}`}>
+          Workspaces
+        </h1>
         {memberships.length > 0 ? (
           <ul className={styles.workspaceItems}>
             {memberships.map(({ role, workspace }) => (
               <li className={styles.workspaceItem} key={workspace.id}>
                 <Link
-                  className={styles.workspaceLink}
+                  className={`${styles.navigationCard} ${styles.workspaceLink}`}
                   href={`/workspaces/${workspace.id}`}
                 >
-                  {workspace.name}
+                  <span>{workspace.name}</span>
+                  <span className={styles.workspaceRole}>
+                    {role.toLowerCase()}
+                  </span>
                 </Link>
-                <span className={styles.workspaceRole}>
-                  {role.toLowerCase()}
-                </span>
               </li>
             ))}
           </ul>
@@ -71,11 +58,6 @@ async function WorkspaceList() {
           </div>
         )}
       </section>
-
-      <footer className={styles.footer}>
-        <span>Less juggling. More doing.</span>
-        <span>Made for your next big thing.</span>
-      </footer>
-    </main>
+    </AdaptiveListPage>
   );
 }

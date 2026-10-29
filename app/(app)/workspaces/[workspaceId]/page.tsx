@@ -2,8 +2,8 @@ import Link from "next/link";
 import { forbidden, notFound } from "next/navigation";
 import { z } from "zod";
 import styles from "@/app/home.module.scss";
+import { AdaptiveListPage } from "@/components/adaptive-list-page";
 import { ProjectCreateForm } from "@/components/project-create-form";
-import { SignOutButton } from "@/components/sign-out-button";
 import { verifySession } from "@/lib/auth-session";
 import { getWorkspaceDetails } from "@/lib/workspaces";
 
@@ -39,31 +39,20 @@ export default async function WorkspaceDetailsPage({
     membership.role === "OWNER" || membership.role === "ADMIN";
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
-        <Link className={styles.brand} href="/" aria-label="Taskflow home">
-          <span className={styles.brandMark} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          taskflow
-        </Link>
-        <div className={styles.account}>
-          <span className={styles.accountName}>{user.name || user.email}</span>
-          <SignOutButton />
-        </div>
-      </header>
-
+    <AdaptiveListPage
+      compactBackHref="/workspaces"
+      compactBackLabel="All workspaces"
+      context="WORKSPACE"
+      pageTitle={workspace.name}
+      userName={user.name || user.email}
+    >
       <section className={styles.workspaceList}>
-        <Link className={styles.workspaceBackLink} href="/workspaces">
-          ← All workspaces
-        </Link>
-        <div className={styles.eyebrow}>
-          <span className={styles.statusDot} />
-          WORKSPACE
+        <div className={styles.listPageIntro}>
+          <Link className={styles.workspaceBackLink} href="/workspaces">
+            ← All workspaces
+          </Link>
+          <h1 className={styles.workspacePageTitle}>{workspace.name}</h1>
         </div>
-        <h1>{workspace.name}</h1>
         {workspace.projects.length > 0 ? (
           <>
             {canCreateProjects && (
@@ -72,8 +61,13 @@ export default async function WorkspaceDetailsPage({
             <ul className={styles.projectItems} aria-label="Projects">
               {workspace.projects.map((project) => (
                 <li className={styles.projectItem} key={project.id}>
-                  <h2>{project.name}</h2>
-                  {project.description && <p>{project.description}</p>}
+                  <Link
+                    className={`${styles.navigationCard} ${styles.projectLink}`}
+                    href={`/projects/${project.id}`}
+                  >
+                    <h2>{project.name}</h2>
+                    {project.description && <p>{project.description}</p>}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -101,11 +95,6 @@ export default async function WorkspaceDetailsPage({
           </div>
         )}
       </section>
-
-      <footer className={styles.footer}>
-        <span>Less juggling. More doing.</span>
-        <span>Made for your next big thing.</span>
-      </footer>
-    </main>
+    </AdaptiveListPage>
   );
 }

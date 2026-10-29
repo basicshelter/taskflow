@@ -1,5 +1,16 @@
 import { prisma } from "@/lib/prisma";
 
+export enum ProjectErrorKind {
+  WorkspaceNotFound = "workspace_not_found",
+  PermissionDenied = "permission_denied",
+  Created = "created",
+  ProjectNotFound = "project_not_found",
+  MembershipRequired = "membership_required",
+  Found = "found",
+}
+
+export const ProjectResultKind = ProjectErrorKind;
+
 type CreateProjectInput = {
   workspaceId: string;
   name: string;
@@ -7,9 +18,9 @@ type CreateProjectInput = {
 };
 
 type CreateProjectResult =
-  | { kind: "workspace_not_found" }
-  | { kind: "permission_denied" }
-  | { kind: "created"; id: string };
+  | { kind: ProjectErrorKind.WorkspaceNotFound }
+  | { kind: ProjectErrorKind.PermissionDenied }
+  | { kind: ProjectErrorKind.Created; id: string };
 
 export async function createProject({
   workspaceId,
@@ -28,13 +39,13 @@ export async function createProject({
   });
 
   if (!workspace) {
-    return { kind: "workspace_not_found" };
+    return { kind: ProjectErrorKind.WorkspaceNotFound };
   }
 
   const role = workspace.memberships[0]?.role;
 
   if (role !== "OWNER" && role !== "ADMIN") {
-    return { kind: "permission_denied" };
+    return { kind: ProjectErrorKind.PermissionDenied };
   }
 
   const project = await prisma.project.create({
@@ -46,5 +57,91 @@ export async function createProject({
     select: { id: true },
   });
 
-  return { kind: "created", id: project.id };
+  return { kind: ProjectErrorKind.Created, id: project.id };
+}
+
+type GetProjectDetailsInput = {
+  projectId: string;
+  userId: string;
+};
+
+type GetProjectDetailsResult =
+  | { kind: ProjectErrorKind.ProjectNotFound }
+  | { kind: ProjectErrorKind.MembershipRequired }
+  | {
+      kind: ProjectErrorKind.Found;
+      project: {
+        id: string;
+        name: string;
+        description: string | null;
+        tasks: Array<{
+          id: string;
+          title: string;
+          description: string | null;
+          status: string;
+        }>;
+      };
+      workspaceId: string;
+    };
+
+export async function getProjectDetails({
+  projectId,
+  userId,
+}: GetProjectDetailsInput): Promise<GetProjectDetailsResult> {
+  const projectReference = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { workspaceId: true },
+  });
+
+  if (!projectReference) {
+    return { kind: ProjectErrorKind.ProjectNotFound };
+  }
+
+  const membership = await prisma.workspaceMembership.findUnique({
+    where: {
+      workspaceId_userId: {
+        workspaceId: projectReference.workspaceId,
+        userId,
+      },
+    },
+    select: { userId: true },
+  });
+
+  if (!membership) {
+    return { kind: ProjectErrorKind.MembershipRequired };
+  }
+
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: {
+      id: true,
+      workspaceId: true,
+      name: true,
+      description: true,
+      tasks: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+        },
+        orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+      },
+    },
+  });
+
+  if (!project) {
+    return { kind: ProjectErrorKind.ProjectNotFound };
+  }
+
+  return {
+    kind: ProjectErrorKind.Found,
+    project: {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      tasks: project.tasks,
+    },
+    workspaceId: project.workspaceId,
+  };
 }

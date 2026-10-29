@@ -1,3 +1,4 @@
+import { render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import WorkspaceDetailsPage from "@/app/(app)/workspaces/[workspaceId]/page";
 
@@ -74,5 +75,37 @@ describe("workspace details access", () => {
         }),
       }),
     ).rejects.toThrow("notFound");
+  });
+
+  it("links each project to its details page", async () => {
+    getWorkspaceDetails.mockResolvedValue({
+      id: "00000000-0000-4000-8000-000000000001",
+      name: "Design",
+      memberships: [{ role: "MEMBER" }],
+      projects: [
+        {
+          id: "00000000-0000-4000-8000-000000000002",
+          name: "Website",
+          description: "Company site",
+        },
+      ],
+    });
+
+    const page = await WorkspaceDetailsPage({
+      params: Promise.resolve({
+        workspaceId: "00000000-0000-4000-8000-000000000001",
+      }),
+    });
+
+    render(page);
+
+    expect(
+      within(screen.getByRole("banner")).getByText("WORKSPACE"),
+    ).toBeTruthy();
+    expect(
+      screen
+        .getByRole("link", { name: /Website Company site/ })
+        .getAttribute("href"),
+    ).toBe("/projects/00000000-0000-4000-8000-000000000002");
   });
 });
