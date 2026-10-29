@@ -1,11 +1,9 @@
-import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import styles from "@/app/home.module.scss";
 import { SignOutButton } from "@/components/sign-out-button";
 import { WorkspaceCreateForm } from "@/components/workspace-create-form";
-import { auth } from "@/lib/auth";
+import { verifySession } from "@/lib/auth-session";
 import { getWorkspaceMemberships } from "@/lib/workspaces";
 
 export default function WorkspacesPage() {
@@ -23,15 +21,8 @@ export default function WorkspacesPage() {
 }
 
 async function WorkspaceList() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) {
-    redirect("/sign-in");
-  }
-
-  const memberships = await getWorkspaceMemberships(session.user.id);
+  const { user } = await verifySession();
+  const memberships = await getWorkspaceMemberships(user.id);
 
   return (
     <main className={styles.page}>
@@ -45,9 +36,7 @@ async function WorkspaceList() {
           taskflow
         </Link>
         <div className={styles.account}>
-          <span className={styles.accountName}>
-            {session.user.name || session.user.email}
-          </span>
+          <span className={styles.accountName}>{user.name || user.email}</span>
           <SignOutButton />
         </div>
       </header>

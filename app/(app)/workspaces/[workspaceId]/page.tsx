@@ -1,11 +1,10 @@
-import { headers } from "next/headers";
 import Link from "next/link";
-import { forbidden, notFound, redirect } from "next/navigation";
+import { forbidden, notFound } from "next/navigation";
 import { z } from "zod";
 import styles from "@/app/home.module.scss";
 import { ProjectCreateForm } from "@/components/project-create-form";
 import { SignOutButton } from "@/components/sign-out-button";
-import { auth } from "@/lib/auth";
+import { verifySession } from "@/lib/auth-session";
 import { getWorkspaceDetails } from "@/lib/workspaces";
 
 export const instant = false;
@@ -16,11 +15,7 @@ export default async function WorkspaceDetailsPage({
   params: Promise<{ workspaceId: string }>;
 }) {
   const { workspaceId } = await params;
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) {
-    redirect("/sign-in");
-  }
+  const { user } = await verifySession();
 
   const parsedWorkspaceId = z.uuid().safeParse(workspaceId);
 
@@ -28,10 +23,7 @@ export default async function WorkspaceDetailsPage({
     notFound();
   }
 
-  const workspace = await getWorkspaceDetails(
-    parsedWorkspaceId.data,
-    session.user.id,
-  );
+  const workspace = await getWorkspaceDetails(parsedWorkspaceId.data, user.id);
 
   if (!workspace) {
     notFound();
@@ -58,9 +50,7 @@ export default async function WorkspaceDetailsPage({
           taskflow
         </Link>
         <div className={styles.account}>
-          <span className={styles.accountName}>
-            {session.user.name || session.user.email}
-          </span>
+          <span className={styles.accountName}>{user.name || user.email}</span>
           <SignOutButton />
         </div>
       </header>

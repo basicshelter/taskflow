@@ -1,13 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import WorkspaceDetailsPage from "@/app/(app)/workspaces/[workspaceId]/page";
 
-const { getSession, getWorkspaceDetails } = vi.hoisted(() => ({
-  getSession: vi.fn(),
+const { verifySession, getWorkspaceDetails } = vi.hoisted(() => ({
+  verifySession: vi.fn(),
   getWorkspaceDetails: vi.fn(),
-}));
-
-vi.mock("next/headers", () => ({
-  headers: vi.fn().mockResolvedValue(new Headers()),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -22,8 +18,8 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
-vi.mock("@/lib/auth", () => ({
-  auth: { api: { getSession } },
+vi.mock("@/lib/auth-session", () => ({
+  verifySession,
 }));
 
 vi.mock("@/lib/workspaces", () => ({
@@ -31,7 +27,7 @@ vi.mock("@/lib/workspaces", () => ({
 }));
 
 beforeEach(() => {
-  getSession.mockResolvedValue({
+  verifySession.mockResolvedValue({
     user: { id: "user-1", name: "Alex", email: "alex@example.com" },
   });
   getWorkspaceDetails.mockResolvedValue(null);
