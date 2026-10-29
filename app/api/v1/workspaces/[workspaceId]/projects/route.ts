@@ -1,4 +1,4 @@
-import { createProject } from "@/lib/controllers/workspace.controller";
+import { createProject } from "@/lib/controllers/project.controller";
 
 export function POST(
   request: Request,
