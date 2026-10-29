@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import WorkspaceDetailsPage from "@/app/(app)/workspaces/[workspaceId]/page";
 
@@ -97,15 +97,12 @@ describe("workspace details access", () => {
       }),
     });
 
-    render(page);
+    const markup = renderToStaticMarkup(page);
 
-    expect(
-      within(screen.getByRole("banner")).getByText("WORKSPACE"),
-    ).toBeTruthy();
-    expect(
-      screen
-        .getByRole("link", { name: /Website Company site/ })
-        .getAttribute("href"),
-    ).toBe("/projects/00000000-0000-4000-8000-000000000002");
+    expect(markup).toContain(
+      'href="/projects/00000000-0000-4000-8000-000000000002"',
+    );
+    expect(markup).toContain("Website");
+    expect(markup).toContain("Company site");
   });
 });

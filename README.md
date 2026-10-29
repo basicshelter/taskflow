@@ -40,10 +40,11 @@ Projects in a workspace open a member-only details page with tasks grouped into 
 
 ## Testing
 
-Run the auth validation and form tests with:
+Install the Playwright browser once, then run each test category or the full suite:
 
 ```bash
+pnpm exec playwright install chromium
 pnpm test
 ```
 
-Sign-up and sign-in inputs are checked with shared Zod schemas before requests are sent to Better Auth. Better Auth continues to validate credentials on the server.
+Tests are grouped under `tests/unit`, `tests/integration`, `tests/api`, and `tests/e2e`. Run one category with `pnpm test:unit`, `pnpm test:integration`, `pnpm test:api`, or `pnpm test:e2e`. The E2E suite uses Playwright in Chromium with API requests stubbed at the network boundary.

@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
     clearMocks: true,
+    exclude: ["tests/e2e/**", "**/node_modules/**", "**/dist/**"],
   },
 });

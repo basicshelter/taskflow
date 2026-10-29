@@ -1,3 +1,4 @@
+import type { TaskStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export enum ProjectErrorKind {
@@ -78,7 +79,7 @@ type GetProjectDetailsResult =
           id: string;
           title: string;
           description: string | null;
-          status: string;
+          status: TaskStatus;
         }>;
       };
       workspaceId: string;
