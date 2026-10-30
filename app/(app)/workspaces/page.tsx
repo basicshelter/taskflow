@@ -69,9 +69,9 @@ async function WorkspaceList() {
           <div className={styles.workspaceEmpty}>
             <p>You are not a member of any workspaces yet.</p>
             <p>Create your first workspace to get started.</p>
-            <WorkspaceCreateForm />
           </div>
         )}
+        <WorkspaceCreateForm />
       </section>
     </AdaptiveListPage>
   );

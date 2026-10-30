@@ -344,6 +344,10 @@
   margin-top: 0;
 }
 
+.workspaceList > .workspaceCreateForm {
+  margin-top: 20px;
+}
+
 .listPageCompact .workspaceList {
   margin-top: 20px;
 }
@@ -421,10 +425,6 @@
   color: #9a9d94;
   font-size: 14px;
   line-height: 1.7;
-
-  .workspaceCreateForm {
-    margin-top: 20px;
-  }
 }
 
 .workspaceBackLink {
