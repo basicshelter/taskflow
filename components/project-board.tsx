@@ -10,6 +10,7 @@ type ProjectBoardProps = {
   project: {
     name: string;
     description: string | null;
+    isArchived: boolean;
     tasks: {
       id: string;
       title: string;
@@ -83,6 +84,11 @@ export function ProjectBoard({
       </header>
 
       <section className={styles.projectDetails}>
+        {project.isArchived && (
+          <p className={styles.archivedProjectNotice} role="status">
+            This project is archived and read-only.
+          </p>
+        )}
         {!isHeaderCollapsed && (
           <div className={styles.projectIntro}>
             <Link

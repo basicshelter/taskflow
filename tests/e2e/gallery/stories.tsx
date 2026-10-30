@@ -55,6 +55,7 @@ function ProjectBoardStory() {
       project={{
         name: "Website",
         description: "Redesign the company website.",
+        isArchived: false,
         tasks: [
           {
             id: "task-1",

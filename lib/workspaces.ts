@@ -43,8 +43,12 @@ export function getWorkspaceDetails(workspaceId: string, userId: string) {
           id: true,
           name: true,
           description: true,
+          archivedAt: true,
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: [
+          { archivedAt: { sort: "asc", nulls: "first" } },
+          { updatedAt: "desc" },
+        ],
       },
     },
   });

@@ -1,3 +1,5 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import WorkspaceDetailsPage from "@/app/(app)/workspaces/[workspaceId]/page";
@@ -27,6 +29,14 @@ vi.mock("@/lib/auth-session", () => ({
 vi.mock("@/lib/workspaces", () => ({
   getWorkspaceDetails,
 }));
+
+function renderWorkspacePage(page: ReactNode) {
+  return renderToStaticMarkup(
+    <QueryClientProvider client={new QueryClient()}>
+      {page}
+    </QueryClientProvider>,
+  );
+}
 
 beforeEach(() => {
   verifySession.mockResolvedValue({
@@ -88,6 +98,7 @@ describe("workspace details access", () => {
           id: "00000000-0000-4000-8000-000000000002",
           name: "Website",
           description: "Company site",
+          archivedAt: null,
         },
       ],
     });
@@ -98,12 +109,65 @@ describe("workspace details access", () => {
       }),
     });
 
-    const markup = renderToStaticMarkup(page);
+    const markup = renderWorkspacePage(page);
 
     expect(markup).toContain(
       'href="/projects/00000000-0000-4000-8000-000000000002"',
     );
     expect(markup).toContain("Website");
     expect(markup).toContain("Company site");
+    expect(markup).not.toContain("Manage project Website");
+  });
+
+  it("shows project settings only to workspace owners and admins", async () => {
+    getWorkspaceDetails.mockResolvedValue({
+      id: "00000000-0000-4000-8000-000000000001",
+      name: "Design",
+      memberships: [{ role: "ADMIN" }],
+      projects: [
+        {
+          id: "00000000-0000-4000-8000-000000000002",
+          name: "Website",
+          description: null,
+          archivedAt: null,
+        },
+      ],
+    });
+
+    const page = await WorkspaceDetailsPage({
+      params: Promise.resolve({
+        workspaceId: "00000000-0000-4000-8000-000000000001",
+      }),
+    });
+
+    expect(renderWorkspacePage(page)).toContain(
+      'aria-label="Manage project Website"',
+    );
+  });
+
+  it("marks archived projects and renders them as archived", async () => {
+    getWorkspaceDetails.mockResolvedValue({
+      id: "00000000-0000-4000-8000-000000000001",
+      name: "Design",
+      memberships: [{ role: "ADMIN" }],
+      projects: [
+        {
+          id: "00000000-0000-4000-8000-000000000002",
+          name: "Website",
+          description: null,
+          archivedAt: new Date("2026-01-01"),
+        },
+      ],
+    });
+
+    const page = await WorkspaceDetailsPage({
+      params: Promise.resolve({
+        workspaceId: "00000000-0000-4000-8000-000000000001",
+      }),
+    });
+    const markup = renderWorkspacePage(page);
+
+    expect(markup).toContain('aria-label="Archived"');
+    expect(markup).not.toContain('aria-label="Manage project Website"');
   });
 });

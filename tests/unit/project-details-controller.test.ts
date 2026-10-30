@@ -25,6 +25,7 @@ beforeEach(() => {
       workspaceId,
       name: "Website",
       description: null,
+      archivedAt: null,
       tasks: [],
     });
   findMembershipUnique.mockReset();
@@ -61,6 +62,7 @@ describe("getProjectDetails", () => {
         id: projectId,
         name: "Website",
         description: null,
+        isArchived: false,
         tasks: [],
       },
       workspaceId,
@@ -79,6 +81,7 @@ describe("getProjectDetails", () => {
         workspaceId: true,
         name: true,
         description: true,
+        archivedAt: true,
         tasks: {
           select: {
             id: true,

@@ -39,6 +39,7 @@ beforeEach(() => {
       id: projectId,
       name: "Website",
       description: "Redesign the company website.",
+      isArchived: false,
       tasks: [
         { id: "task-1", title: "Write copy", status: "TODO" },
         { id: "task-2", title: "Build layout", status: "IN_PROGRESS" },

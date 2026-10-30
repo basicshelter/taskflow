@@ -84,7 +84,14 @@ describe("workspace routing", () => {
       id: "workspace-1",
       name: "Design",
       memberships: [{ role: "OWNER" }],
-      projects: [{ id: "project-1", name: "Website", description: null }],
+      projects: [
+        {
+          id: "project-1",
+          name: "Website",
+          description: null,
+          archivedAt: null,
+        },
+      ],
     });
 
     const workspace = await getWorkspaceDetails("workspace-1", "user-1");
@@ -99,8 +106,16 @@ describe("workspace routing", () => {
           select: { role: true },
         },
         projects: {
-          select: { id: true, name: true, description: true },
-          orderBy: { updatedAt: "desc" },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            archivedAt: true,
+          },
+          orderBy: [
+            { archivedAt: { sort: "asc", nulls: "first" } },
+            { updatedAt: "desc" },
+          ],
         },
       },
     });

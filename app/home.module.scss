@@ -790,14 +790,19 @@
 }
 
 .projectItem {
+  position: relative;
   min-width: 0;
 }
 
 .projectLink {
   display: block;
   min-height: 120px;
+  padding-right: 56px;
 
   h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #eaede4;
     font-size: 16px;
     font-weight: 550;
@@ -809,6 +814,135 @@
     color: #9a9d94;
     font-size: 12px;
     line-height: 1.7;
+  }
+}
+
+.projectArchivedIcon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  color: #b8cf91;
+}
+
+.projectSettingsContainer {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.projectSettingsTrigger {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(236, 240, 230, 0.11);
+  border-radius: 8px;
+  background: rgba(30, 33, 28, 0.72);
+  color: #b8cf91;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease,
+    visibility 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(197, 243, 108, 0.45);
+    background: rgba(34, 38, 31, 0.9);
+    color: #c5f36c;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(197, 243, 108, 0.65);
+    outline-offset: 3px;
+  }
+}
+
+.projectItem:hover .projectSettingsTrigger,
+.projectItem:focus-within .projectSettingsTrigger {
+  opacity: 1;
+  visibility: visible;
+}
+
+.projectSettingsForm {
+  display: grid;
+  gap: 14px;
+  color: #d7d9d1;
+  font-size: 12px;
+
+  label {
+    display: grid;
+    gap: 8px;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid rgba(236, 240, 230, 0.14);
+    border-radius: 7px;
+    background: rgba(30, 33, 28, 0.92);
+    color: #eaede4;
+    font: inherit;
+    resize: vertical;
+  }
+
+  input {
+    min-height: 40px;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: rgba(197, 243, 108, 0.7);
+    outline: none;
+  }
+
+  input:disabled,
+  textarea:disabled {
+    opacity: 0.65;
+  }
+}
+
+.projectSaveButton {
+  justify-self: start;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #c5f36c;
+  color: #20231d;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.projectSettingsHelp {
+  margin-bottom: 12px;
+  color: #9a9d94;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.archivedProjectNotice {
+  margin-bottom: 16px;
+  color: #b8cf91;
+  font-size: 12px;
+}
+
+@media (hover: none) {
+  .projectSettingsTrigger {
+    opacity: 1;
+    visibility: visible;
   }
 }
 

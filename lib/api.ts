@@ -17,6 +17,8 @@ export enum HttpErrorMessage {
   ProjectNotFound = "Project not found.",
   MembershipRequired = "Workspace membership required.",
   ProjectCreationPermissionDenied = "Only workspace owners and admins can create projects.",
+  ProjectManagementPermissionDenied = "Only workspace owners and admins can manage projects.",
+  ProjectArchived = "Archived projects are read-only.",
 }
 
 const APPLICATION_ERROR_HTTP_MAPPINGS: Record<

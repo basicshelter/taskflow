@@ -4,6 +4,7 @@ import { z } from "zod";
 import styles from "@/app/home.module.scss";
 import { AdaptiveListPage } from "@/components/adaptive-list-page";
 import { ProjectCreateForm } from "@/components/project-create-form";
+import { ProjectSettings } from "@/components/project-settings";
 import { verifySession } from "@/lib/auth-session";
 import { getWorkspaceDetails } from "@/lib/workspaces";
 
@@ -35,8 +36,9 @@ export default async function WorkspaceDetailsPage({
     forbidden();
   }
 
-  const canCreateProjects =
+  const canManageProjects =
     membership.role === "OWNER" || membership.role === "ADMIN";
+  const canCreateProjects = canManageProjects;
 
   return (
     <AdaptiveListPage
@@ -65,9 +67,36 @@ export default async function WorkspaceDetailsPage({
                     className={`${styles.navigationCard} ${styles.projectLink}`}
                     href={`/projects/${project.id}`}
                   >
-                    <h2>{project.name}</h2>
+                    <h2>
+                      {project.archivedAt && (
+                        <svg
+                          aria-label="Archived"
+                          className={styles.projectArchivedIcon}
+                          fill="none"
+                          role="img"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            d="M3 7h14v9H3zM2 4h16v3H2zM7 10h6"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.5"
+                          />
+                        </svg>
+                      )}
+                      {project.name}
+                    </h2>
                     {project.description && <p>{project.description}</p>}
                   </Link>
+                  {canManageProjects && project.archivedAt === null && (
+                    <ProjectSettings
+                      isArchived={false}
+                      projectId={project.id}
+                      projectName={project.name}
+                      projectDescription={project.description}
+                    />
+                  )}
                 </li>
               ))}
             </ul>
