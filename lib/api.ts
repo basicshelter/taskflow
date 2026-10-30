@@ -12,7 +12,7 @@ export enum HttpErrorMessage {
   WorkspaceNotFound = "This workspace could not be found.",
   InvalidWorkspaceMemberId = "This workspace member could not be found.",
   WorkspacePermissionDenied = "Only workspace owners and admins can manage members.",
-  WorkspaceOwnerRequired = "Only the workspace owner can transfer ownership.",
+  WorkspaceOwnerRequired = "Only the workspace owner can perform this action.",
   WorkspaceMemberMissing = "That user is not a workspace member.",
   ProjectNotFound = "Project not found.",
   MembershipRequired = "Workspace membership required.",

@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  deleteWorkspace,
   inviteWorkspaceMember,
   removeWorkspaceMember,
+  renameWorkspace,
   transferWorkspaceOwnership,
   updateWorkspaceMemberRole,
 } from "@/lib/controllers/workspace.controller";
@@ -10,6 +12,7 @@ const {
   transaction,
   workspaceFindUnique,
   workspaceUpdate,
+  workspaceDelete,
   userFindFirst,
   membershipCreate,
   membershipFindUnique,
@@ -19,6 +22,7 @@ const {
   transaction: vi.fn(),
   workspaceFindUnique: vi.fn(),
   workspaceUpdate: vi.fn(),
+  workspaceDelete: vi.fn(),
   userFindFirst: vi.fn(),
   membershipCreate: vi.fn(),
   membershipFindUnique: vi.fn(),
@@ -27,7 +31,11 @@ const {
 }));
 
 const tx = {
-  workspace: { findUnique: workspaceFindUnique, update: workspaceUpdate },
+  workspace: {
+    findUnique: workspaceFindUnique,
+    update: workspaceUpdate,
+    delete: workspaceDelete,
+  },
   user: { findFirst: userFindFirst },
   workspaceMembership: {
     create: membershipCreate,
@@ -58,6 +66,62 @@ beforeEach(() => {
 });
 
 describe("workspace member management", () => {
+  it("allows an admin to rename a workspace", async () => {
+    workspaceUpdate.mockResolvedValue({ id: workspaceId, name: "Design" });
+
+    await expect(
+      renameWorkspace({
+        workspaceId,
+        requesterId: "admin-1",
+        name: "Design",
+      }),
+    ).resolves.toEqual({ id: workspaceId, name: "Design" });
+
+    expect(workspaceUpdate).toHaveBeenCalledWith({
+      where: { id: workspaceId },
+      data: { name: "Design" },
+      select: { id: true, name: true },
+    });
+  });
+
+  it("allows the owner to delete a workspace", async () => {
+    await deleteWorkspace({ workspaceId, requesterId: "owner-1" });
+
+    expect(workspaceDelete).toHaveBeenCalledWith({
+      where: { id: workspaceId },
+    });
+  });
+
+  it("denies admins from deleting a workspace", async () => {
+    await expect(
+      deleteWorkspace({ workspaceId, requesterId: "admin-1" }),
+    ).rejects.toMatchObject({ status: 403 });
+
+    expect(workspaceDelete).not.toHaveBeenCalled();
+  });
+
+  it("denies regular members from renaming or deleting a workspace", async () => {
+    workspaceFindUnique.mockResolvedValue({
+      id: workspaceId,
+      ownerId: "owner-1",
+      memberships: [{ role: "MEMBER" }],
+    });
+
+    await expect(
+      renameWorkspace({
+        workspaceId,
+        requesterId: "member-1",
+        name: "Design",
+      }),
+    ).rejects.toMatchObject({ status: 403 });
+    await expect(
+      deleteWorkspace({ workspaceId, requesterId: "member-1" }),
+    ).rejects.toMatchObject({ status: 403 });
+
+    expect(workspaceUpdate).not.toHaveBeenCalled();
+    expect(workspaceDelete).not.toHaveBeenCalled();
+  });
+
   it("adds a registered user as a member after an admin invites by email", async () => {
     await expect(
       inviteWorkspaceMember({

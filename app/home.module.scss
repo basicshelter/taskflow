@@ -659,6 +659,67 @@
   font-size: 12px;
 }
 
+.workspaceSettingsSection {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(236, 240, 230, 0.11);
+}
+
+.workspaceSettingsSectionTitle {
+  margin-bottom: 12px;
+  color: #d7d9d1;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.workspaceDeleteButton {
+  justify-self: start;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 154, 139, 0.4);
+  border-radius: 7px;
+  background: transparent;
+  color: #ff9a8b;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+.workspaceDeleteActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+
+  button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid rgba(236, 240, 230, 0.16);
+    border-radius: 7px;
+    background: #20231d;
+    color: #d7d9d1;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+  }
+
+  button:last-child {
+    border-color: transparent;
+    background: #a63e36;
+    color: #fff3f0;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
 .workspaceMemberInviteFields {
   display: flex;
   flex-wrap: wrap;

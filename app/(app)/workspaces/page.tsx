@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import styles from "@/app/home.module.scss";
 import { AdaptiveListPage } from "@/components/adaptive-list-page";
 import { WorkspaceCreateForm } from "@/components/workspace-create-form";
-import { WorkspaceMembers } from "@/components/workspace-members";
+import { WorkspaceSettings } from "@/components/workspace-settings";
 import { verifySession } from "@/lib/auth-session";
 import {
   getWorkspaceMembersForWorkspaces,
@@ -56,7 +56,7 @@ async function WorkspaceList() {
                     </span>
                   </span>
                 </Link>
-                <WorkspaceMembers
+                <WorkspaceSettings
                   currentUserRole={role}
                   members={memberLists[workspace.id] ?? []}
                   workspaceId={workspace.id}

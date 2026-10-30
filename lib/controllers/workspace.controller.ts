@@ -78,6 +78,39 @@ async function requireWorkspaceOwner(
   return workspace;
 }
 
+export async function renameWorkspace({
+  workspaceId,
+  requesterId,
+  name,
+}: ManageWorkspaceInput & { name: string }) {
+  return prisma.$transaction(async (tx) => {
+    const workspace = await requireWorkspaceManager(tx, {
+      workspaceId,
+      requesterId,
+    });
+
+    return tx.workspace.update({
+      where: { id: workspace.id },
+      data: { name },
+      select: { id: true, name: true },
+    });
+  });
+}
+
+export async function deleteWorkspace({
+  workspaceId,
+  requesterId,
+}: ManageWorkspaceInput) {
+  return prisma.$transaction(async (tx) => {
+    const workspace = await requireWorkspaceOwner(tx, {
+      workspaceId,
+      requesterId,
+    });
+
+    await tx.workspace.delete({ where: { id: workspace.id } });
+  });
+}
+
 export async function inviteWorkspaceMember({
   workspaceId,
   requesterId,
